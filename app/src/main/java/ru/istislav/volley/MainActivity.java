@@ -15,6 +15,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +33,15 @@ public class MainActivity extends AppCompatActivity {
         JsonArrayRequest arrayRequest = new JsonArrayRequest(Request.Method.GET, URL, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.d("Response", response.toString());
+//                Log.d("Response", response.toString());
+                for (int i = 0; i<response.length(); i++) {
+                    try {
+                        JSONObject movieObject = response.getJSONObject(i);
+                        Log.d("Items: ", movieObject.getString("name")); //name is the string property of the each object in the json-array, that we have got
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }, new Response.ErrorListener() {
             @Override
