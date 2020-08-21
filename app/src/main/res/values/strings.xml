@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Volley</string>
+    <string name="get_json_btn_text">Get Json</string>
+    <string name="enterNameHint">Message to save</string>
 </resources>

@@ -3,8 +3,13 @@ package ru.istislav.volley;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.VoiceInteractor;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +27,14 @@ import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Button jsonButton;
+    private Button saveButton;
+    private TextView result;
+    private EditText enterMessage;
+
+    private SharedPreferences myPrefs;
+    private static final String PREFS_NAME = "myPrefsFile";
+
     private final static String URL = "https://api.reelgood.com/v3.0/content/people/best-of?availability=onAnySource&content_kind=both&hide_seen=false&hide_tracked=false&hide_watchlisted=false&imdb_end=10&imdb_start=0&region=us&rg_end=100&rg_start=0&sort=0&year_end=2020&year_start=1900";
     private final static String URL_String = "https://api.reelgood.com/v3.0/checkip";
     private final static String URL_EQ = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson";
@@ -33,10 +46,38 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        queue = Volley.newRequestQueue(this);
-        getStringObject(URL_String);
-        getJsonObject(URL_EQ);
-        getArrayObject(URL);
+        enterMessage = (EditText) findViewById(R.id.enterName);
+        result = (TextView) findViewById(R.id.resulTextView);
+
+        jsonButton = (Button) findViewById(R.id.jsonButton);
+        jsonButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                queue = Volley.newRequestQueue(MainActivity.this);
+                getStringObject(URL_String);
+                getJsonObject(URL_EQ);
+                getArrayObject(URL);
+            }
+        });
+
+        saveButton = (Button) findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myPrefs = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = myPrefs.edit();
+
+                editor.putString("message", enterMessage.getText().toString());
+                editor.commit();
+            }
+        });
+
+
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+        if(prefs.contains("message")) {
+            String message = prefs.getString("message", "not found");
+            result.setText("Message: " +  message);
+        }
 
     }
 
