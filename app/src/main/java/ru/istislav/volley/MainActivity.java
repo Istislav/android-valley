@@ -3,6 +3,7 @@ package ru.istislav.volley;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.VoiceInteractor;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,10 +26,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
 public class MainActivity extends AppCompatActivity {
 
     private Button jsonButton;
     private Button saveButton;
+    private Button saveTodoButton;
     private TextView result;
     private EditText enterMessage;
 
@@ -79,6 +88,31 @@ public class MainActivity extends AppCompatActivity {
             result.setText("Message: " +  message);
         }
 
+
+        saveTodoButton = (Button) findViewById(R.id.saveTodoButton);
+        saveTodoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = enterMessage.getText().toString();
+                if (message.equals("")) {
+
+                } else {
+                    writeToFile(message);
+                }
+            }
+        });
+
+        String msg = null;
+        try {
+            msg = readFromFile();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (msg != null) {
+            enterMessage.setText(msg);
+        }
     }
 
     public void getJsonObject(String url) {
@@ -145,5 +179,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         queue.add(stringRequest);
+    }
+
+    private void writeToFile(String message) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("todoList.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(message);
+            outputStreamWriter.close(); // Don't forget to close your stream!
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String readFromFile() throws IOException {
+        String result = "";
+
+        InputStream inputStream = openFileInput("todoList.txt");
+
+        if (inputStream != null) {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String tempString = "";
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while ( (tempString = bufferedReader.readLine()) != null ) {
+                stringBuilder.append(tempString).append("\n");
+            }
+            inputStream.close();
+            result = stringBuilder.toString();
+        }
+
+        return result;
     }
 }

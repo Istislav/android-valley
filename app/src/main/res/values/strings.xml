@@ -2,4 +2,6 @@
     <string name="app_name">Volley</string>
     <string name="get_json_btn_text">Get Json</string>
     <string name="enterNameHint">Message to save</string>
+    <string name="save_shared_prefs">Save Shared Preferencies</string>
+    <string name="save_to_file">Save to file</string>
 </resources>
